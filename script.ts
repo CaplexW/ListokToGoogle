@@ -14,12 +14,48 @@ function formatData(days: NodeListOf<Element>, date: DateOfWorkout) {
 }
 
 function parseWeek(page: HTMLElement) {
-    const week:DateOfWorkout[] = [];
+    const week = page.querySelector('.weekContainer');
+
+    const weekHead = week?.querySelector('.weekHead');
+    const weekDays = Array.from(weekHead?.querySelectorAll('.weekColumn'));
+    const nextButton = weekHead?.querySelector('.nextWeek');
+    const prevButton = weekHead?.querySelector('.prevWeek');
+
+    const weekBody = week?.querySelector('.weekBody')?.querySelectorAll('.weekColumn');
+
+    if (!weekHead || !weekDays || !weekBody || !nextButton || !prevButton) return;
+
+    const widths = weekDays.map(day => day.offsetWidth);
+    const uniqueWidths = [...new Set(widths)];
+    if (uniqueWidths.length === 1) {
+        return [];
+    }
+    const maxWidth = Math.max(...uniqueWidths);
+
+    const busyDays = weekDays.reduce((acc, dayElem, index) => {
+        if (dayElem.offsetWidth === maxWidth) {
+            const [dayOfWeek, date] = dayElem.querySelector('.weekColumn')?.textContent.split(' ');
+            const [day, month] = date.split('.');
+            const trainings = weekBody[index].querySelectorAll('dayBlock');
+
+            const busyDay = {
+                date: {
+                    dayOfWeek,
+                    day,
+                    month,
+                },
+
+            };
+            acc.push(busyDay);
+        }
+    }, []);
+
+    const weekData:DateOfWorkout[] = [];
     page.querySelectorAll('.weekColumn').forEach((node) => {
         const [dayOfWeek, date] = node.textContent.split(' ');
         const [day, month] = date.split('.');
 
-        week.push({
+        weekData.push({
             dayOfWeek: parseInt(dayOfWeek),
             day: parseInt(day),
             month: parseInt(month),
@@ -45,3 +81,14 @@ type DateOfWorkout = {
     month: number,
     year: number,
 }
+
+// XML Struture
+// weekContainer
+//  weekHead
+//    weekColumn - дата "Пн 24.11"
+//  weekBody
+//    weekColumn
+//      dayBlock []
+//        minimizeHover
+//          timePeriod - время "11:00 - 11:55"
+//          eventName - название "Pilates / Пилатес"
