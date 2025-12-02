@@ -1,23 +1,23 @@
-function formatData(days: NodeListOf<Element>, date: DateOfWorkout) {
-    const result: FormatedData[] = [];
+// function formatData(days: NodeListOf<Element>, date: DateOfWorkout) {
+//     const result: FormatedData[] = [];
 
-    days.forEach((item) => {
-        const itemNorm = {
-            name: item.querySelector('.eventName')?.textContent,
-            time: item.querySelector('.timePeriod')?.textContent,
-            date,
-        }
-        if (typeof itemNorm.name) result.push(itemNorm);
-    })
+//     days.forEach((item) => {
+//         const itemNorm = {
+//             name: item.querySelector('.eventName')?.textContent,
+//             time: item.querySelector('.timePeriod')?.textContent,
+//             date,
+//         }
+//         if (typeof itemNorm.name) result.push(itemNorm);
+//     })
 
-    return result;
-}
+//     return result;
+// }
 
 function parseWeek(page: HTMLElement) {
     const week = page.querySelector('.weekContainer');
 
     const weekHead = week?.querySelector('.weekHead');
-    const weekDays = Array.from(weekHead?.querySelectorAll('.weekColumn'));
+    const weekDays = Array.from(weekHead?.querySelectorAll('.weekColumn')) as HTMLElement[];
     const nextButton = weekHead?.querySelector('.nextWeek');
     const prevButton = weekHead?.querySelector('.prevWeek');
 
@@ -32,23 +32,41 @@ function parseWeek(page: HTMLElement) {
     }
     const maxWidth = Math.max(...uniqueWidths);
 
-    const busyDays = weekDays.reduce((acc, dayElem, index) => {
+    const busyDays = weekDays.reduce((acc: BusyDay[], dayElem, index) => {
         if (dayElem.offsetWidth === maxWidth) {
-            const [dayOfWeek, date] = dayElem.querySelector('.weekColumn')?.textContent.split(' ');
+            const [dayOfWeek, date] = dayElem.querySelector('.weekColumn')?.textContent?.split(' ') as string[];
             const [day, month] = date.split('.');
-            const trainings = weekBody[index].querySelectorAll('dayBlock');
+            const dayBlocks = weekBody[index].querySelectorAll('dayBlock');
+            const trainingsData = getSubElementsFromNodeList(dayBlocks, '.minimizeHover');
+            const trainings = trainingsData.map((training) => {
+                const time = training.querySelector('.timePeriod')?.textContent;
+                const [start, end] = time?.split(' - ') as string[];
+                const name = training.querySelector('.eventName')?.textContent as string;
+
+                return {
+                    eventTime: {
+                        start,
+                        end,
+                    },
+                    name,
+                };
+            });
 
             const busyDay = {
                 date: {
                     dayOfWeek,
-                    day,
-                    month,
+                    day: parseInt(day),
+                    month: parseInt(month),
                 },
-
-            };
+                trainings,
+            } as BusyDay;
             acc.push(busyDay);
+            
+            return acc;
+        } else {
+            return acc;
         }
-    }, []);
+    }, [] as BusyDay[]);
 
     const weekData:DateOfWorkout[] = [];
     page.querySelectorAll('.weekColumn').forEach((node) => {
@@ -66,10 +84,33 @@ function parseWeek(page: HTMLElement) {
     return week;
 }
 
+function getSubElementsFromNodeList(nodeList: NodeListOf<Element>, elementSelector: string) {
+    const subElements:Element[] = [];
 
+    nodeList.forEach((elem) => {
+        const subElem = elem.querySelector(elementSelector);
+        if (subElem) subElements.push(subElem);
+    });
+    
+    return subElements;
+}
 
 const sourceUrl = 'https://an7452.listok.online/wapi#filtered/%7B%22employee%22:%5B2732%5D%7D';
 
+type BusyDay = {
+    date: {
+        dayOfWeek: string,
+        day: number,
+        month: number,
+    },
+    trainings: {
+        eventTime: {
+            start:string,
+            end:string,
+        },
+        name: string,
+    }[]
+}
 type FormatedData = {
     name?: string,
     time?: string,
