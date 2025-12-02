@@ -11,7 +11,7 @@ const thisDate = { day: new Date().getDate(), month: new Date().getMonth() + 1 }
 let currentWeekDates = getCurrentWeekDates();
 let startPointIsFound = false;
 let endPointIsReached = false;
-let currentOffice = 1;
+let currentOffice = 0;
 
 const tickInterval = 100;
 
@@ -70,6 +70,11 @@ function startToTheEndPoint() {
         const csvResult = convertToGoogleCalendarCSV(schedual);
 
         console.log(csvResult);
+        const month = new Date().getMonth() + 1;
+        const year = new Date().getFullYear();
+        const office = currentOffice ? "в Невском" : "на Ленина";
+        const fileName = `График за ${month}.${year} ${office}`;
+        downloadCSV(csvResult, fileName);
       } else {
         startToTheEndPoint();
       }
@@ -183,10 +188,22 @@ function convertToGoogleCalendarCSV(month) {
 
   return Array.from(csvRows).join('\n');
 }
+function downloadCSV(csvContent, fileName) {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute(`download`, fileName+".csv");
+
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 function startProgramm() { findStartPoint() };
 
 startProgramm();
-
-
-
-
