@@ -145,41 +145,43 @@ function getSubElementsFromNodeList(nodeList, elementSelector) {
 
   return subElements;
 }
-function convertToGoogleCalendarCSV(events) {
+function convertToGoogleCalendarCSV(month) {
   const csvRows = new Set();
 
   const headers = 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private';
   csvRows.add(headers);
 
-  for (const event of events) {
-    console.log('event is')
-    console.log(event)
-    console.log('event.date is');
-    console.log(event.date)
-    const date = event.date;
-    const startDate = `${date.day}/${date.month}/${date.year}`;
-    const endDate = `${date.day}/${date.month}/${date.year}`;
+  for (const week of month) {
 
-    const startTime = event.eventTime.start;
-    const endTime = event.eventTime.end;
+    week.forEach((day) => {
+      const date = day.date;
+      const startDate = `${date.day}/${date.month}/${date.year}`;
+      const endDate = `${date.day}/${date.month}/${date.year}`;
 
-    const values = [
-      `"${event.name}"`, // Subject
-      startDate,         // Start Date
-      startTime,         // Start Time
-      endDate,           // End Date
-      endTime,           // End Time
-      'FALSE',           // All Day Event
-      '""',              // Description (пустое)
-      '""',              // Location (пустое)
-      'FALSE'            // Private
-    ];
+      day.trainings.forEach((event) => {
+        const startTime = event.eventTime.start;
+        const endTime = event.eventTime.end;
 
-    csvRows.add(values.join(','));
+        const values = [
+          `"${event.name}"`, // Subject
+          startDate,         // Start Date
+          startTime,         // Start Time
+          endDate,           // End Date
+          endTime,           // End Time
+          'FALSE',           // All Day Event
+          '""',              // Description (пустое)
+          '""',              // Location (пустое)
+          'FALSE'            // Private
+        ];
+
+        csvRows.add(values.join(','));
+      });
+    })
+
   }
   console.log(csvRows);
 
-  return csvRows.join('\n');
+  return Array.from(csvRows).join('\n');
 }
 function startProgramm() { findStartPoint() };
 
