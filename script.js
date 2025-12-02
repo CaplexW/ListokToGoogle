@@ -67,6 +67,9 @@ function startToTheEndPoint() {
         endPointIsReached = true;
         console.log('operation is done!');
         console.log(schedual)
+        const csvResult = convertToGoogleCalendarCSV(schedual);
+
+        console.log(csvResult);
       } else {
         startToTheEndPoint();
       }
@@ -142,6 +145,46 @@ function getSubElementsFromNodeList(nodeList, elementSelector) {
 
   return subElements;
 }
+function convertToGoogleCalendarCSV(events) {
+  const csvRows = new Set();
+
+  const headers = 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private';
+  csvRows.add(headers);
+
+  for (const event of events) {
+    console.log('event is')
+    console.log(event)
+    console.log('event.date is');
+    console.log(event.date)
+    const date = event.date;
+    const startDate = `${date.day}/${date.month}/${date.year}`;
+    const endDate = `${date.day}/${date.month}/${date.year}`;
+
+    const startTime = event.eventTime.start;
+    const endTime = event.eventTime.end;
+
+    const values = [
+      `"${event.name}"`, // Subject
+      startDate,         // Start Date
+      startTime,         // Start Time
+      endDate,           // End Date
+      endTime,           // End Time
+      'FALSE',           // All Day Event
+      '""',              // Description (пустое)
+      '""',              // Location (пустое)
+      'FALSE'            // Private
+    ];
+
+    csvRows.add(values.join(','));
+  }
+  console.log(csvRows);
+
+  return csvRows.join('\n');
+}
 function startProgramm() { findStartPoint() };
 
 startProgramm();
+
+
+
+
