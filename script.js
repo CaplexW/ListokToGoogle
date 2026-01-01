@@ -127,8 +127,8 @@ function parseWeek() {
       const busyDay = {
         date: {
           dayOfWeek,
-          day: day ? parseInt(day) : NaN,
-          month: month ? parseInt(month) : NaN,
+          day: day.length > 1 ? day : `0${day}`,
+          month: month.length > 1 ? month : `0${month}`,
           year: new Date().getFullYear(),
         },
         trainings,
@@ -195,7 +195,7 @@ function downloadCSV(csvContent, fileName) {
 
   const link = document.createElement('a');
   link.setAttribute('href', url);
-  link.setAttribute(`download`, fileName+".csv");
+  link.setAttribute(`download`, fileName + ".csv");
 
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
