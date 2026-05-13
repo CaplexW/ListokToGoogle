@@ -6,7 +6,7 @@ const prevWeekButton = page.querySelector('.prevWeek');
 
 const schedual = [];
 
-const thisDate = { day: new Date().getDate(), month: new Date().getMonth() + 1 };
+const today = { day: new Date().getDate(), month: new Date().getMonth() + 1 };
 
 let currentWeekDates = getCurrentWeekDates();
 let startPointIsFound = false;
@@ -23,36 +23,97 @@ function getCurrentWeekDates() {
 }
 function findStartPoint() {
   if (!startPointIsFound) {
-    if (thisDate.month < currentWeekDates[0].month) {
+    console.info('Начинаю проверку новой недели...');
+
+    const firstDayOfWeek = currentWeekDates[0];
+    const lastDayOfWeek = currentWeekDates[currentWeekDates.length - 1];
+
+    const weekStartsInThisMonth = today.month === firstDayOfWeek.month;
+    const weekStartsInNextMonth = today.month < firstDayOfWeek.month;
+    const weekStartsInPrevMonth = today.month > firstDayOfWeek.month;
+    const weekEndsInPrevMonth = today.month > lastDayOfWeek.month;
+
+    if (weekStartsInNextMonth) {
+
+      console.info('Неделя начинается в следующем месяце.');
+      console.info('Проверяю предыдущую неделю...');
+
       prevWeekButton.click();
       setTimeout(() => {
         currentWeekDates = getCurrentWeekDates();
         console.log(`current week dates are:`, currentWeekDates);
         findStartPoint();
       }, tickInterval);
-    } else if (thisDate.month > currentWeekDates[currentWeekDates.length - 1].month) {
+      console.log('subCond-1');
+      console.log(today.month > currentWeekDates[currentWeekDates.length - 1].month);
+      console.log('subCond-2');
+      console.log(currentWeekDates.some((date) => date.day === 1));
+    } else if (weekEndsInPrevMonth) {
+
+      console.info('Неделя заканчивается в прошлом месяце.');
+      console.info('Проверяю следующую неделю...');
+
       nextWeekButton.click();
       setTimeout(() => {
         currentWeekDates = getCurrentWeekDates();
-        console.log(`current week dates are:`, currentWeekDates);
         findStartPoint();
       }, tickInterval);
-    } else if (thisDate.month === currentWeekDates[0].month) {
+    } else if (weekStartsInThisMonth) {
+
+      console.info('Неделя начинается в текущем месяце.');
+      console.info('Проверяю наличие 1-го дня текущего месяца...');
+
       if (currentWeekDates.some((date) => date.day === 1)) {
+        console.info('Начало текущего месяца найдено!');
+        console.info('Начинаю поиск последней недели текущего месяца...');
+
         startPointIsFound = true;
-        console.log(`current week dates are:`, currentWeekDates);
-        console.log(`this date is:`, thisDate);
-        console.log(`start point is found:`, startPointIsFound);
         startToTheEndPoint();
       } else {
+
+        console.info('Текущий месяц начинается не на этой неделе.');
+        console.info('Проверяю предыдущую неделю...');
+
         prevWeekButton.click();
         setTimeout(() => {
           currentWeekDates = getCurrentWeekDates();
-          console.log(`current week dates are:`, currentWeekDates);
           findStartPoint();
         }, tickInterval);
       }
+    } else if (weekStartsInPrevMonth) {
+
+      console.info('Неделя начинается в прошлом месяце.');
+      console.info('Проверяю наличие 1-го дня текущего месяца...');
+
+      if (currentWeekDates.some((date) => date.day === 1 && date.month === today.month)) {
+        console.info('Начало текущего месяца найдено!');
+        console.info('Начинаю поиск последней недели текущего месяца...');
+
+        startPointIsFound = true;
+        startToTheEndPoint();
+      } else {
+        console.info('Текущий месяц начинается не на этой неделе.');
+        console.info('Проверяю следующую неделю...');
+
+        nextWeekButton.click();
+        setTimeout(() => {
+          currentWeekDates = getCurrentWeekDates();
+          findStartPoint();
+        }, tickInterval);
+      }
+    } else {
+      console.error('Ни одно из проверяемых условий не соотвутвует нынешнему состоянию');
+
+      showElement(weekStartsInNextMonth, 'неделя начинается в следующем месяце');
+      showElement(weekStartsInThisMonth, 'неделя начинается в текущем месяце');
+      showElement(weekStartsInPrevMonth, 'неделя начинается в прошлом месяце');
+      showElement(weekEndsInPrevMonth, 'неделя заканчивается в прошлом месяце');
+
+      showElement(today.month, 'Текущий месяц');
+      showElement(firstDayOfWeek, 'Первый день недели');
+      showElement(lastDayOfWeek, 'Послдений день недели');
     }
+
   }
 }
 function startToTheEndPoint() {
@@ -63,7 +124,7 @@ function startToTheEndPoint() {
 
     setTimeout(() => {
       currentWeekDates = getCurrentWeekDates();
-      if (currentWeekDates[0].month > thisDate.month || currentWeekDates[0].month === 1) {
+      if (currentWeekDates[0].month > today.month || currentWeekDates[0].month === 1) {
         endPointIsReached = true;
         console.log('operation is done!');
         console.log(schedual)
@@ -204,6 +265,12 @@ function downloadCSV(csvContent, fileName) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
-function startProgramm() { findStartPoint() };
+function startProgramm() { console.info('Начинаю поиск первой недели текущего месяца...'); findStartPoint() };
 
 startProgramm();
+
+
+
+function showElement(element, name) {
+  console.log(name, element);
+}
