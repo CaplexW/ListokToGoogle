@@ -1,4 +1,5 @@
 const page = document.querySelector('.weekContainer');
+const currentOffice = parseInt(document.querySelector('.inlineSelect').value);
 const weekHead = page.querySelector('.weekHead');
 const nextWeekButton = page.querySelector('.nextWeek');
 const prevWeekButton = page.querySelector('.prevWeek');
@@ -8,7 +9,6 @@ const today = { day: new Date().getDate(), month: new Date().getMonth() + 1 };
 let currentWeekDates = getCurrentWeekDates();
 let startPointIsFound = false;
 let endPointIsReached = false;
-let currentOffice = 0;
 const tickInterval = 300;
 
 const MESSAGES = {
