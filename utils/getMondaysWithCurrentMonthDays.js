@@ -1,4 +1,4 @@
-function getMondaysWithCurrentMonthDays() {
+export default function getMondaysWithCurrentMonthDays() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
