@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-  <button id="generate-button">Сгенерировать</button>
+  <div class="container" style="margin: 25 auto;">
+    <select name="trainer" id="trainer-selector">
+      <option value="Светлана">Светлана</option>
+      <option value="Екатерина">Екатерина</option>
+      <option value="Марина">Марина</option>
+      <option value="Анна">Анна</option>
+    </select>
+
+    <select name="office" id="office-selector">
+      <option value="0">Ленина</option>
+      <option value="1">Невский</option>
+    </select>
+
+    <h2>Скачать график для импорта в:</h2>
+    <button id="download-button-google-calendar">Google-календарь</button>
+  </div>
   <script src="./apiBasedScript.js" />
   <script src="./utils/asyncMap.js" />
   <script src="./utils/fetchJSON.js" />
   <script src="./utils/getMondaysWithCurrentMonthDays.js" />
 </body>
+
 </html>

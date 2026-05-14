@@ -1,4 +1,5 @@
-export default async function fetchJSONToObj(url) {
+export default async function fetchJSON(url) {
+    
     try {
         const response = await fetch(url);
 
