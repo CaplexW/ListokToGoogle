@@ -6,6 +6,9 @@ const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
 const trainerSelector = document.querySelector('#trainer-selector');
 const officeSelector = document.querySelector('#office-selector');
+const monthSelector = document.querySelector('#month-selector');
+
+monthSelector.value = new Date().getMonth().toString();
 
 googleCalendarButton.addEventListener('click', downloadSchedule);
 
@@ -16,11 +19,10 @@ async function getEventList() {
   const eventList = dateData.map((date) => date.events);
   const trainer = trainerSelector.value;
 
-  const normolizedEvents = normalizeSchedule(eventList, trainer)
+  const normolizedEvents = normalizeSchedule(eventList)
 
   return normolizedEvents
 }
-
 async function downloadSchedule() {
   const eventList = await getEventList();
 
@@ -28,12 +30,10 @@ async function downloadSchedule() {
   downloadCSV(CSVString);
   console.log(eventList);
 }
-
-
 function getMondaysWithCurrentMonthDays() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = now.getMonth();
+  const month = parseInt(monthSelector.value);
 
   const firstDayOfMonth = new Date(year, month, 1);
   const firstDayOfWeek = firstDayOfMonth.getDay();
@@ -62,39 +62,40 @@ function getMondaysWithCurrentMonthDays() {
   });
 }
 async function fetchJSON(url) {
-    const officeId = parseInt(officeSelector.value)
-    const payload = {
-        officeId: officeId,
-        currentContactId: 0
-    };
+  const officeId = parseInt(officeSelector.value)
+  const payload = {
+    officeId: officeId,
+    currentContactId: 0
+  };
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST', // или 'GET', если сервер ожидает GET с body (редко, но возможно)
-            headers: {
-                'Content-Type': 'application/json', // Указываем, что отправляем JSON
-            },
-            body: JSON.stringify(payload) // Преобразуем объект в JSON-строку
-        });
+  try {
+    const response = await fetch(url, {
+      method: 'POST', // или 'GET', если сервер ожидает GET с body (редко, но возможно)
+      headers: {
+        'Content-Type': 'application/json', // Указываем, что отправляем JSON
+      },
+      body: JSON.stringify(payload) // Преобразуем объект в JSON-строку
+    });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Ошибка при получении данных:', error);
-        throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Ошибка при получении данных:', error);
+    throw error;
+  }
 }
 async function asyncMap(array, asyncFn) {
   const promises = array.map(item => asyncFn(item));
   return Promise.all(promises);
 }
-
-function normalizeSchedule(data, trainer = null) {
+function normalizeSchedule(data) {
   const result = [];
+  const trainer = trainerSelector.value;
+  const thisMonth = parseInt(monthSelector.value) + 1;
 
   for (const timeSlotObj of data) {
 
@@ -104,17 +105,16 @@ function normalizeSchedule(data, trainer = null) {
       for (const dateStr in datesObj) {
         const eventArray = datesObj[dateStr];
         const event = eventArray[0];
-
-        if (!event) continue;
-
-        if (trainer !== null && event.teacherName !== trainer) {
-          continue;
-        }
-
         const [year, month, day] = dateStr.split('-').map(Number);
 
+        if (!event) continue;
+        if (month !== thisMonth) continue;
+        if (event.teacherName !== trainer) continue;
+
+        
+
         result.push({
-          date: { year, month, day },
+          date: `${day}/${month}/${year}`,
           name: event.groupName,
           startTime: time,
           endTime: event.endTime,
@@ -125,41 +125,36 @@ function normalizeSchedule(data, trainer = null) {
 
   return result;
 }
-
 function normalizeScheduleToCSV(normalizedEvents) {
-  // Заголовок CSV
   const header = 'Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private';
 
-  // Формируем строки для каждого события
   const rows = normalizedEvents.map(event => {
-    // Форматируем дату в формате DD/MM/YYYY
-    const startDate = `${event.date.day}/${event.date.month}/${event.date.year}`;
-    const endDate = `${event.date.day}/${event.date.month}/${event.date.year}`;
+    const startDate = `${event.date}`;
+    const endDate = `${event.date}`;
 
     return [
-      `"${event.name}"`, // Subject
-      startDate,          // Start Date
-      event.startTime,    // Start Time
-      endDate,            // End Date
-      event.endTime,      // End Time
-      'FALSE',            // All Day Event
-      '""',               // Description
-      '""',               // Location
-      'FALSE'             // Private
+      `"${event.name}"`,
+      startDate,
+      event.startTime,
+      endDate,
+      event.endTime,
+      'FALSE',
+      '""',
+      '""',
+      'FALSE'
     ].join(',');
   });
 
-  // Объединяем заголовок и строки в одну строку CSV
   return [header, ...rows].join('\n');
 }
-
 function downloadCSV(csvString) {
   const today = new Date();
-  const thisMonth = today.getMonth() + 1;
+  const thisMonth = parseInt(monthSelector.value) + 1;
   const thisYear = today.getFullYear();
   const currentOffice = parseInt(officeSelector.value) ? "в Невском" : "на Ленина";
+  const trainerName = declineName(trainerSelector.value);
 
-  const fileName = `График ${thisMonth > 9 ? thisMonth : "0" + thisMonth}.${thisYear} ${currentOffice}.csv`;
+  const fileName = `График ${trainerName} на ${thisMonth > 9 ? thisMonth : "0" + thisMonth}.${thisYear} ${currentOffice}.csv`;
   const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
   const url = window.URL.createObjectURL(blob);
 
@@ -173,6 +168,13 @@ function downloadCSV(csvString) {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   }, 100);
+}
+function declineName(name) {
+  const nameArr = name.split('');
+  nameArr[nameArr.length - 1] = 'ы';
+  const declinedName = nameArr.join('');
+
+  return declinedName;
 }
 
 function showElement(name, element) {
