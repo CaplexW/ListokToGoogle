@@ -4,6 +4,7 @@
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
+const importToGoogleCalendarButton = document.querySelector('#import-to-google-calendar-btn');
 const trainerSelector = document.querySelector('#trainer-selector');
 const officeSelector = document.querySelector('#office-selector');
 const monthSelector = document.querySelector('#month-selector');
@@ -11,6 +12,11 @@ const monthSelector = document.querySelector('#month-selector');
 monthSelector.value = new Date().getMonth().toString();
 
 googleCalendarButton.addEventListener('click', downloadSchedule);
+importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
+
+async function importToGoogleCalendar() {
+  alert('Importing schedule to your GoogleCalendar...');
+}
 
 async function getEventList() {
   const startPoints = getMondaysWithCurrentMonthDays();
@@ -111,7 +117,7 @@ function normalizeSchedule(data) {
         if (month !== thisMonth) continue;
         if (event.teacherName !== trainer) continue;
 
-        
+
 
         result.push({
           date: `${day}/${month}/${year}`,
