@@ -15,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Инициализация OAuth 2.0 клиента для получения access_token
+// Инициализация OAuth 2.0 клиента
 let tokenClient;
 
 function initClient() {
@@ -31,24 +31,11 @@ function initClient() {
   });
 }
 
-// Обработчик для кнопки авторизации
-function handleAuthClick() {
-  tokenClient.requestAccessToken();
-}
-
 // Инициализация при загрузке страницы
 window.onload = function () {
   initClient();
-  // Рендерим кнопку Google Sign-In (опционально, если хочешь оставить старую кнопку)
-  google.accounts.id.initialize({
-    client_id: "862650729174-t93uout29b5g7uah5kg3j9et0p9g949p.apps.googleusercontent.com",
-    callback: handleAuthClick, // Теперь вызывает requestAccessToken
-    scope: "https://www.googleapis.com/auth/calendar",
-    auto_select: false,
-    cancel_on_tap_outside: false,
+  // Добавляем обработчик на кнопку Google Sign-In
+  document.getElementById("google-signin").addEventListener("click", () => {
+    tokenClient.requestAccessToken();
   });
-  google.accounts.id.renderButton(
-    document.getElementById("google-signin"),
-    { theme: "outline", size: "large", text: "signin_with" }
-  );
 };
