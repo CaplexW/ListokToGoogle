@@ -4,6 +4,10 @@ import getMondaysWithCurrentMonthDays from './utils/getMondaysWithCurrentMonthDa
 import declineName from './utils/declineName.js';
 import normalizeSchedule from './utils/normolizeSchedule.js';
 import convertScheduleToGoogleCSV from './utils/convertScheduleToGoogleCSV.js'
+import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
+import showCalendarSelector from './utils/calendarModal.js';
+import importNormalizedEvents from './utils/importNormalizedEvents.js';
+import { addEventToCalendar } from './utils/calendarAPI.js';
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
@@ -23,10 +27,84 @@ async function downloadSchedule() {
   console.log(eventList);
 }
 
-importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
-async function importToGoogleCalendar() {
-  alert('Importing schedule to your GoogleCalendar...');
-}
+// importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
+// async function importToGoogleCalendar() {
+//   const eventExample = {
+//     summary: "Тестовое событие из ListOK2Google",
+//     start: {
+//       dateTime: "2026-05-20T10:00:00+07:00",
+//       timeZone: "Asia/Krasnoyarsk",
+//     },
+//     end: {
+//       dateTime: "2026-05-20T11:00:00+07:00",
+//       timeZone: "Asia/Krasnoyarsk",
+//     },
+//     description: "Событие, созданное через ListOK2Google",
+//   };
+//   const accessToken = localStorage.getItem("googleAccessToken");
+
+//   if (accessToken) {
+//     addEventToGoogleCalendar(accessToken, eventExample);
+
+//     alert('Importing schedule to your GoogleCalendar...');
+//   }
+// }
+
+// TESTimportToGoogleCalendarButton.addEventListener('click', async () => {
+//   const accessToken = localStorage.getItem("googleAccessToken");
+//   if (!accessToken) {
+//     alert("Сначала авторизуйтесь через Google!");
+//     return;
+//   }
+
+//   const selectedCalendarId = await showCalendarSelector(accessToken);
+//   if (!selectedCalendarId) {
+//     return; // Пользователь отменил выбор
+//   }
+
+//   const eventExample = {
+//     summary: "Тестовое событие из ListOK2Google",
+//     start: {
+//       dateTime: "2026-05-20T10:00:00+07:00",
+//       timeZone: "Asia/Krasnoyarsk",
+//     },
+//     end: {
+//       dateTime: "2026-05-20T11:00:00+07:00",
+//       timeZone: "Asia/Krasnoyarsk",
+//     },
+//     description: "Событие, созданное через ListOK2Google",
+//   };
+
+//   try {
+//     await addEventToCalendar(accessToken, selectedCalendarId, eventExample);
+//   } catch (error) {
+//     console.error("Ошибка при добавлении события:", error);
+//     alert(`Ошибка при добавлении события: ${error.message}`);
+//   }
+
+//   alert(`События добавлены в календарь!`);
+// });
+
+importToGoogleCalendarButton.addEventListener('click', async () => {
+  const accessToken = localStorage.getItem("googleAccessToken");
+  if (!accessToken) {
+    alert("Сначала авторизуйтесь через Google!");
+    return;
+  }
+
+  const selectedCalendarId = await showCalendarSelector(accessToken);
+  if (!selectedCalendarId) {
+    return;
+  }
+
+  try {
+    const eventList = await getEventList();
+    await importNormalizedEvents(selectedCalendarId, eventList);
+    alert(`События успешно добавлены в календарь: ${selectedCalendarId}`);
+  } catch (error) {
+    alert(`Ошибка при импорте событий: ${error.message}`);
+  }
+});
 
 async function getEventList() {
   const trainer = trainerSelector.value;

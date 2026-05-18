@@ -11,29 +11,71 @@ const firebaseConfig = {
   appId: "1:862650729174:web:a90bc402622b6a4021bf77",
   measurementId: "G-76N05JWSLM"
 };
-
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Обработчик авторизации через Google
-function handleCredentialResponse(response) {
-  const accessToken = response.credential;
-  console.log("Google OAuth Token:", accessToken);
-  localStorage.setItem("googleAccessToken", accessToken);
-  alert("Авторизация успешна! Токен сохранён в localStorage.");
+// --- Авторизация через OAuth2 (только этот способ!)
+let tokenClient;
+
+function initClient() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: "862650729174-t93uout29b5g7uah5kg3j9et0p9g949p.apps.googleusercontent.com",
+    scope: "https://www.googleapis.com/auth/calendar",
+    callback: (tokenResponse) => {
+      const accessToken = tokenResponse.access_token;
+      localStorage.setItem("googleAccessToken", accessToken);
+
+      // Устанавливаем токен в gapi.client, если он загружен
+      if (window.gapi?.client) {
+        gapi.client.setToken({ access_token: accessToken });
+      }
+
+      alert("Авторизация успешна!");
+    },
+  });
 }
 
-// Инициализация GIS после загрузки страницы
-window.onload = function () {
-  google.accounts.id.initialize({
-    client_id: "862650729174-t93uout29b5g7uah5kg3j9et0p9g949p.apps.googleusercontent.com",
-    callback: handleCredentialResponse,
-    scope: "https://www.googleapis.com/auth/calendar",
-    auto_select: false,
-    cancel_on_tap_outside: false,
+// --- Инициализация gapi.client (один раз!)
+function initGapiClient() {
+  if (!window.gapi) {
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/api.js';
+    script.onload = () => {
+      gapi.load('client', () => {
+        gapi.client.init({
+          apiKey: "",
+          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        }).then(() => {
+          const accessToken = localStorage.getItem("googleAccessToken");
+          if (accessToken) {
+            gapi.client.setToken({ access_token: accessToken });
+          }
+        });
+      });
+    };
+    document.head.appendChild(script);
+  } else {
+    gapi.load('client', () => {
+      gapi.client.init({
+        apiKey: "",
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+      }).then(() => {
+        const accessToken = localStorage.getItem("googleAccessToken");
+        if (accessToken) {
+          gapi.client.setToken({ access_token: accessToken });
+        }
+      });
+    });
+  }
+}
+
+// --- Инициализация при загрузке страницы
+window.onload = function() {
+  initClient();
+  initGapiClient();
+
+  // Кнопка авторизации (HTML-кнопка, а не GIS)
+  document.getElementById("google-signin").addEventListener("click", () => {
+    tokenClient.requestAccessToken();
   });
-  google.accounts.id.renderButton(
-    document.getElementById("google-signin"),
-    { theme: "outline", size: "large", text: "signin_with" }
-  );
 };
