@@ -4,6 +4,7 @@ import getMondaysWithCurrentMonthDays from './utils/getMondaysWithCurrentMonthDa
 import declineName from './utils/declineName.js';
 import normalizeSchedule from './utils/normolizeSchedule.js';
 import convertScheduleToGoogleCSV from './utils/convertScheduleToGoogleCSV.js'
+import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
@@ -25,7 +26,25 @@ async function downloadSchedule() {
 
 importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
 async function importToGoogleCalendar() {
-  alert('Importing schedule to your GoogleCalendar...');
+  const eventExample = {
+    summary: "Тестовое событие из ListOK2Google",
+    start: {
+      dateTime: "2026-05-20T10:00:00+07:00",
+      timeZone: "Asia/Krasnoyarsk",
+    },
+    end: {
+      dateTime: "2026-05-20T11:00:00+07:00",
+      timeZone: "Asia/Krasnoyarsk",
+    },
+    description: "Событие, созданное через ListOK2Google",
+  };
+  const accessToken = localStorage.getItem("googleAccessToken");
+
+  if (accessToken) {
+    addEventToGoogleCalendar(accessToken, eventExample);
+    
+    alert('Importing schedule to your GoogleCalendar...');
+  }
 }
 
 async function getEventList() {

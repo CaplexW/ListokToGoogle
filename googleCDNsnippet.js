@@ -15,7 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Обработчик авторизации через Google
 function handleCredentialResponse(response) {
   const accessToken = response.credential;
   console.log("Google OAuth Token:", accessToken);
@@ -23,7 +22,6 @@ function handleCredentialResponse(response) {
   alert("Авторизация успешна! Токен сохранён в localStorage.");
 }
 
-// Инициализация GIS после загрузки страницы
 window.onload = function () {
   google.accounts.id.initialize({
     client_id: "862650729174-t93uout29b5g7uah5kg3j9et0p9g949p.apps.googleusercontent.com",
