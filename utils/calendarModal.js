@@ -1,4 +1,5 @@
 import { getUserCalendars } from "./calendarAPI.js";
+import declineName from "./declineName.js";
 
 /**
  * Отображает модальное окно с селектором календарей.
@@ -24,7 +25,17 @@ export default async function showCalendarSelector(accessToken) {
     document.getElementById("confirm-calendar-selection").onclick = () => {
       const selectedCalendarId = selector.value;
       modal.style.display = "none";
-      const confirmed = confirm(`Вы собираетесь импортировать график в календаро "${calendars[0].summary}". Импортировать? `)
+      const calendarSelector = document.querySelector('#calendar-selector');
+      const trainerSelector = document.querySelector('#trainer-selector');
+      const monthSelector = document.querySelector('#month-selector');
+      const officeSelector = document.querySelector('#office-selector');
+
+      const officeName = parseInt(officeSelector.value) ? 'в Невском' : 'на Ленина';
+      const selectedMonth = monthSelector.options[monthSelector.selectedIndex].textContent;
+      const calendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
+      const trainerName = declineName(trainerSelector.options[trainerSelector.selectedIndex].textContent);
+
+      const confirmed = confirm(`Вы собираетесь импортировать график ${trainerName} ${officeName} за ${selectedMonth} в календарь "${calendarName}". Импортировать? `)
       if (confirmed) resolve(selectedCalendarId);
     };
 

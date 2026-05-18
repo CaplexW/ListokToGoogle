@@ -15,6 +15,7 @@ const importToGoogleCalendarButton = document.querySelector('#import-to-google-c
 const trainerSelector = document.querySelector('#trainer-selector');
 const officeSelector = document.querySelector('#office-selector');
 const monthSelector = document.querySelector('#month-selector');
+const calendarSelector = document.querySelector('#calendar-selector');
 
 monthSelector.value = new Date().getMonth().toString();
 
@@ -100,7 +101,8 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
   try {
     const eventList = await getEventList();
     await importNormalizedEvents(selectedCalendarId, eventList);
-    alert(`События успешно добавлены в календарь: ${selectedCalendarId}`);
+    const calendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
+    alert(`События успешно добавлены в календарь: "${calendarName}"`);
   } catch (error) {
     alert(`Ошибка при импорте событий: ${error.message}`);
   }
