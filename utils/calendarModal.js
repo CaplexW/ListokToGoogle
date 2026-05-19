@@ -1,5 +1,5 @@
 import askPermission from "./askPermission.js";
-import { getUserCalendars } from "./calendarAPI.js";
+import getUserCalendars from "./calendarAPI.js";
 import declineName from "./declineName.js";
 import showMessage from "./showMessage.js";
 

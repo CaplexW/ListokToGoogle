@@ -7,7 +7,6 @@ import convertScheduleToGoogleCSV from './utils/convertScheduleToGoogleCSV.js'
 import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
 import showCalendarSelector from './utils/calendarModal.js';
 import importNormalizedEvents from './utils/importNormalizedEvents.js';
-import { addEventToCalendar } from './utils/calendarAPI.js';
 import { isTokenValid } from './googleCDNsnippet.js';
 import showMessage from './utils/showMessage.js';
 import getWordForEvents from './utils/getWordForEvents.js';
@@ -40,7 +39,7 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
 
   const isValid = await isTokenValid(accessToken);
   if (!isValid) {
-    showMessage("Ваш токен истёк. Пожалуйста, авторизуйтесь через Google снова.");
+    showMessage("Срок вашей авторизации истёк. Пожалуйста, авторизуйтесь через Google снова.");
     localStorage.removeItem("googleAccessToken"); // Очистка невалидного токена
     return;
   }
