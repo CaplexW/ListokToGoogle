@@ -8,6 +8,9 @@ import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
 import showCalendarSelector from './utils/calendarModal.js';
 import importNormalizedEvents from './utils/importNormalizedEvents.js';
 import { addEventToCalendar } from './utils/calendarAPI.js';
+import { isTokenValid } from './googleCDNsnippet.js';
+import showMessage from './utils/showMessage.js';
+import getWordForEvents from './utils/getWordForEvents.js';
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
@@ -15,6 +18,7 @@ const importToGoogleCalendarButton = document.querySelector('#import-to-google-c
 const trainerSelector = document.querySelector('#trainer-selector');
 const officeSelector = document.querySelector('#office-selector');
 const monthSelector = document.querySelector('#month-selector');
+const calendarSelector = document.querySelector('#calendar-selector');
 
 monthSelector.value = new Date().getMonth().toString();
 
@@ -27,82 +31,35 @@ async function downloadSchedule() {
   console.log(eventList);
 }
 
-// importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
-// async function importToGoogleCalendar() {
-//   const eventExample = {
-//     summary: "Тестовое событие из ListOK2Google",
-//     start: {
-//       dateTime: "2026-05-20T10:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     end: {
-//       dateTime: "2026-05-20T11:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     description: "Событие, созданное через ListOK2Google",
-//   };
-//   const accessToken = localStorage.getItem("googleAccessToken");
-
-//   if (accessToken) {
-//     addEventToGoogleCalendar(accessToken, eventExample);
-
-//     alert('Importing schedule to your GoogleCalendar...');
-//   }
-// }
-
-// TESTimportToGoogleCalendarButton.addEventListener('click', async () => {
-//   const accessToken = localStorage.getItem("googleAccessToken");
-//   if (!accessToken) {
-//     alert("Сначала авторизуйтесь через Google!");
-//     return;
-//   }
-
-//   const selectedCalendarId = await showCalendarSelector(accessToken);
-//   if (!selectedCalendarId) {
-//     return; // Пользователь отменил выбор
-//   }
-
-//   const eventExample = {
-//     summary: "Тестовое событие из ListOK2Google",
-//     start: {
-//       dateTime: "2026-05-20T10:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     end: {
-//       dateTime: "2026-05-20T11:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     description: "Событие, созданное через ListOK2Google",
-//   };
-
-//   try {
-//     await addEventToCalendar(accessToken, selectedCalendarId, eventExample);
-//   } catch (error) {
-//     console.error("Ошибка при добавлении события:", error);
-//     alert(`Ошибка при добавлении события: ${error.message}`);
-//   }
-
-//   alert(`События добавлены в календарь!`);
-// });
-
 importToGoogleCalendarButton.addEventListener('click', async () => {
   const accessToken = localStorage.getItem("googleAccessToken");
   if (!accessToken) {
-    alert("Сначала авторизуйтесь через Google!");
+    showMessage("Сначала авторизуйтесь через Google!");
     return;
   }
 
+  const isValid = await isTokenValid(accessToken);
+  if (!isValid) {
+    showMessage("Ваш токен истёк. Пожалуйста, авторизуйтесь через Google снова.");
+    localStorage.removeItem("googleAccessToken"); // Очистка невалидного токена
+    return;
+  }
+
+  // Если токен валиден, продолжаем выполнение
   const selectedCalendarId = await showCalendarSelector(accessToken);
   if (!selectedCalendarId) {
     return;
   }
-
   try {
     const eventList = await getEventList();
     await importNormalizedEvents(selectedCalendarId, eventList);
-    alert(`События успешно добавлены в календарь: ${selectedCalendarId}`);
+
+    const selectedCalendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
+    const eventWord = getWordForEvents(eventList.length);
+
+    showMessage(`${eventList.length} ${eventWord} успешно добавлены в календарь "${selectedCalendarName}"`);
   } catch (error) {
-    alert(`Ошибка при импорте событий: ${error.message}`);
+    showMessage(`Ошибка при импорте событий: ${error.message}`);
   }
 });
 
