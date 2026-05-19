@@ -1,4 +1,4 @@
-import { getUserCalendars } from "./calendarAPI.js";
+import getUserCalendars from "./calendarAPI.js";
 
 /**
  * Отображает модальное окно с селектором календарей.

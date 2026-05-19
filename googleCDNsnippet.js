@@ -14,7 +14,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// --- Авторизация через OAuth2 (только этот способ!)
 let tokenClient;
 
 function initClient() {
@@ -30,7 +29,7 @@ function initClient() {
         gapi.client.setToken({ access_token: accessToken });
       }
 
-      alert("Авторизация успешна!");
+      show("Авторизация успешна!");
     },
   });
 }

@@ -27,64 +27,6 @@ async function downloadSchedule() {
   console.log(eventList);
 }
 
-// importToGoogleCalendarButton.addEventListener('click', importToGoogleCalendar);
-// async function importToGoogleCalendar() {
-//   const eventExample = {
-//     summary: "Тестовое событие из ListOK2Google",
-//     start: {
-//       dateTime: "2026-05-20T10:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     end: {
-//       dateTime: "2026-05-20T11:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     description: "Событие, созданное через ListOK2Google",
-//   };
-//   const accessToken = localStorage.getItem("googleAccessToken");
-
-//   if (accessToken) {
-//     addEventToGoogleCalendar(accessToken, eventExample);
-
-//     alert('Importing schedule to your GoogleCalendar...');
-//   }
-// }
-
-// TESTimportToGoogleCalendarButton.addEventListener('click', async () => {
-//   const accessToken = localStorage.getItem("googleAccessToken");
-//   if (!accessToken) {
-//     alert("Сначала авторизуйтесь через Google!");
-//     return;
-//   }
-
-//   const selectedCalendarId = await showCalendarSelector(accessToken);
-//   if (!selectedCalendarId) {
-//     return; // Пользователь отменил выбор
-//   }
-
-//   const eventExample = {
-//     summary: "Тестовое событие из ListOK2Google",
-//     start: {
-//       dateTime: "2026-05-20T10:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     end: {
-//       dateTime: "2026-05-20T11:00:00+07:00",
-//       timeZone: "Asia/Krasnoyarsk",
-//     },
-//     description: "Событие, созданное через ListOK2Google",
-//   };
-
-//   try {
-//     await addEventToCalendar(accessToken, selectedCalendarId, eventExample);
-//   } catch (error) {
-//     console.error("Ошибка при добавлении события:", error);
-//     alert(`Ошибка при добавлении события: ${error.message}`);
-//   }
-
-//   alert(`События добавлены в календарь!`);
-// });
-
 importToGoogleCalendarButton.addEventListener('click', async () => {
   const accessToken = localStorage.getItem("googleAccessToken");
   if (!accessToken) {

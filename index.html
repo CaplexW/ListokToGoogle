@@ -10,24 +10,46 @@
 </head>
 
 <body>
-  <div class="container" style="margin: 25px auto;">
-    <div class="google-signin-container">
-      <button id="google-signin" style="margin-bottom: 20px; background: none; border: none;" >Sign in with Google</button>
+  <div class="container" style="
+    margin: 25px auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 30rem;
+    ">
+    <div class="google-signin-container" style="margin: 0 auto;">
+      <button id="google-signin" style="
+      margin-bottom: 40px;
+      border-radius: 6px;
+      box-shadow: .2rem .2rem 20px 0;
+      background: #fbfbfb;
+      font-size: 20px;
+      ">
+        Авторизироваться через Google
+      </button>
     </div>
 
-    <select name="trainer" id="trainer-selector">
+    <select name="trainer" id="trainer-selector" style="
+    max-width: 10rem;
+    margin-bottom: 1rem;
+    ">
       <option value="Светлана">Светлана</option>
       <option value="Екатерина">Екатерина</option>
       <option value="Марина">Марина</option>
       <option value="Анна">Анна</option>
     </select>
 
-    <select name="office" id="office-selector">
+    <select name="office" id="office-selector" style="
+    max-width: 10rem;
+    margin-bottom: 1rem;
+    ">
       <option value="0">Ленина</option>
       <option value="1">Невский</option>
     </select>
 
-    <select name="month" id="month-selector">
+    <select name="month" id="month-selector" style="
+    max-width: 10rem;
+    margin-bottom: 1rem;
+    ">
       <option value="0">Январь</option>
       <option value="1">Февраль</option>
       <option value="2">Март</option>
@@ -42,10 +64,10 @@
       <option value="11">Декабрь</option>
     </select>
 
-    <h2>Скачать файл для импорта в:</h2>
-    <button id="download-button-google-calendar">Google-календарь</button>
+    <h3>Скачать файл для импорта в:</h3>
+    <button id="download-button-google-calendar" style="margin: 0 auto;">Google-календарь</button>
 
-    <h2>Импортировать в:</h2>
+    <h3>Импортировать в:</h3>
     <button id="import-to-google-calendar-btn" style="border: none; background: none; cursor: pointer;">
       <image width="40" src="./assets/images/Google_Calendar_icon_(2020).svg" />
     </button>
