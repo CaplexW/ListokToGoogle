@@ -1,6 +1,7 @@
 // Инициализация Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+import showMessage from "./utils/showMessage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDafMlOVzaGNinGwVAps9DclV05NO6vnTY",
@@ -30,7 +31,7 @@ function initClient() {
         gapi.client.setToken({ access_token: accessToken });
       }
 
-      alert("Авторизация успешна!");
+      showMessage("Авторизация успешна!");
     },
   });
 }
@@ -70,7 +71,7 @@ function initGapiClient() {
 }
 
 // --- Инициализация при загрузке страницы
-window.onload = function() {
+window.onload = function () {
   initClient();
   initGapiClient();
 
@@ -79,3 +80,23 @@ window.onload = function() {
     tokenClient.requestAccessToken();
   });
 };
+
+
+export async function isTokenValid(accessToken) {
+  try {
+    const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      // Токен валиден
+      return true;
+    } else {
+      // Токен невалиден
+      return false;
+    }
+  } catch (error) {
+    console.error('Ошибка при проверке токена:', error);
+    return false;
+  }
+}
+

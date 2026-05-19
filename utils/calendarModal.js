@@ -1,5 +1,7 @@
+import askPermission from "./askPermission.js";
 import { getUserCalendars } from "./calendarAPI.js";
 import declineName from "./declineName.js";
+import showMessage from "./showMessage.js";
 
 /**
  * Отображает модальное окно с селектором календарей.
@@ -22,7 +24,7 @@ export default async function showCalendarSelector(accessToken) {
 
     modal.style.display = "block";
 
-    document.getElementById("confirm-calendar-selection").onclick = () => {
+    document.getElementById("confirm-calendar-selection").onclick = async () => {
       const selectedCalendarId = selector.value;
       modal.style.display = "none";
       const calendarSelector = document.querySelector('#calendar-selector');
@@ -35,8 +37,12 @@ export default async function showCalendarSelector(accessToken) {
       const calendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
       const trainerName = declineName(trainerSelector.options[trainerSelector.selectedIndex].textContent);
 
-      const confirmed = confirm(`Вы собираетесь импортировать график ${trainerName} ${officeName} за ${selectedMonth} в календарь "${calendarName}". Импортировать? `)
-      if (confirmed) resolve(selectedCalendarId);
+      const confirmed = await askPermission(`Вы собираетесь импортировать график ${trainerName} ${officeName} за ${selectedMonth} в календарь "${calendarName}". Импортировать? `)
+      if (confirmed) {
+        resolve(selectedCalendarId);
+      } else {
+        showMessage('Импорт отменен!');
+      }
     };
 
     document.getElementById("cancel-calendar-selection").onclick = () => {

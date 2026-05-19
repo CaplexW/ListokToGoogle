@@ -1,3 +1,5 @@
+import showMessage from "./showMessage.js";
+
 export default async function addEventToGoogleCalendar(accessToken, event) {
   try {
     const response = await fetch(
@@ -19,6 +21,6 @@ export default async function addEventToGoogleCalendar(accessToken, event) {
     return result;
   } catch (error) {
     console.error("Ошибка при добавлении события:", error);
-    alert(`Ошибка: ${error.message}`);
+    showMessage(`Ошибка: ${error.message}`);
   }
 }

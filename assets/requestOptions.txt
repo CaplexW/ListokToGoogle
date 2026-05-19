@@ -1,6 +1,0 @@
-cookie - _ym_uid=1778640866213261937; _ym_d=1778640866; ci_session=5n03q9jk856dhfr1kum2ii8ccrdfuljr; _ym_isad=2; office_id=0
-referer - https://an7452.listok.online/wapi
-
-cookie - _ym_uid=1778640866213261937; _ym_d=1778640866; ci_session=5n03q9jk856dhfr1kum2ii8ccrdfuljr; _ym_isad=2; office_id=1
-referer - https://an7452.listok.online/wapi?officeId=1
-
