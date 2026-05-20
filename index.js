@@ -4,13 +4,11 @@ import getMondaysWithCurrentMonthDays from './utils/getMondaysWithCurrentMonthDa
 import declineName from './utils/declineName.js';
 import normalizeSchedule from './utils/normolizeSchedule.js';
 import convertScheduleToGoogleCSV from './utils/convertScheduleToGoogleCSV.js'
-import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
 import showCalendarSelector from './utils/calendarModal.js';
 import importNormalizedEvents from './utils/importNormalizedEvents.js';
-import { addEventToCalendar } from './utils/calendarAPI.js';
-import { isTokenValid } from './googleCDNsnippet.js';
 import showMessage from './utils/showMessage.js';
 import getWordForEvents from './utils/getWordForEvents.js';
+import isTokenValid from './utils/isTokenValid.js';
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
@@ -31,21 +29,21 @@ async function downloadSchedule() {
   console.log(eventList);
 }
 
-importToGoogleCalendarButton.addEventListener('click', async () => {
+importToGoogleCalendarButton.addEventListener('click', importEventsToGoogleCalendar);
+async function importEventsToGoogleCalendar() {
   const accessToken = localStorage.getItem("googleAccessToken");
   if (!accessToken) {
     showMessage("Сначала авторизуйтесь через Google!");
     return;
   }
 
-  const isValid = await isTokenValid(accessToken);
-  if (!isValid) {
-    showMessage("Ваш токен истёк. Пожалуйста, авторизуйтесь через Google снова.");
-    localStorage.removeItem("googleAccessToken"); // Очистка невалидного токена
-    return;
-  }
+  // const isValid = await isTokenValid(accessToken);
+  // if (!isValid) {
+  //   showMessage("Ваш токен истёк. Пожалуйста, авторизуйтесь через Google снова.");
+  //   localStorage.removeItem("googleAccessToken"); // Очистка невалидного токена
+  //   return;
+  // }
 
-  // Если токен валиден, продолжаем выполнение
   const selectedCalendarId = await showCalendarSelector(accessToken);
   if (!selectedCalendarId) {
     return;
@@ -61,7 +59,7 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
   } catch (error) {
     showMessage(`Ошибка при импорте событий: ${error.message}`);
   }
-});
+}
 
 async function getEventList() {
   const trainer = trainerSelector.value;

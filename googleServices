@@ -1,0 +1,77 @@
+// Инициализация Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+import showMessage from "./utils/showMessage.js";
+
+const calendarURL = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+const scopeURL = "https://www.googleapis.com/auth/calendar";
+const clientId = "862650729174-t93uout29b5g7uah5kg3j9et0p9g949p.apps.googleusercontent.com";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDafMlOVzaGNinGwVAps9DclV05NO6vnTY",
+  authDomain: "listok2-ea802.firebaseapp.com",
+  projectId: "listok2-ea802",
+  storageBucket: "listok2-ea802.firebasestorage.app",
+  messagingSenderId: "862650729174",
+  appId: "1:862650729174:web:a90bc402622b6a4021bf77",
+  measurementId: "G-76N05JWSLM"
+};
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+// --- Авторизация через OAuth2 (только этот способ!)
+let tokenClient;
+
+function initGapiClient(accessToken) {
+  gapi.load('client', () => {
+    gapi.client.init({
+      apiKey: firebaseConfig.apiKey,
+      discoveryDocs: [calendarURL],
+    }).then(() => {
+      gapi.client.setToken({ access_token: accessToken });
+      console.log("gapi.client инициализирован с access_token");
+    });
+  });
+}
+
+function initClient() {
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: () => {
+      tokenClient.requestAccessToken();
+    },
+    scope: scopeURL,
+    auto_select: false,
+    cancel_on_tap_outside: false,
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("google-signin"),
+    { theme: "outline", size: "large", text: "signin_with" }
+  );
+
+  // tokenClient = google.accounts.oauth2.initTokenClient({
+  //   client_id: clientId,
+  //   scope: scopeURL,
+  //   callback: (tokenResponse) => {
+  //     const accessToken = tokenResponse.access_token;
+  //     localStorage.setItem("googleAccessToken", accessToken);
+
+  //     if (window.gapi?.client) {
+  //       gapi.client.setToken({ access_token: accessToken });
+  //     }
+
+  //     showMessage("Авторизация успешна!");
+  //   },
+  // });
+}
+
+window.onload = function () {
+  initClient();
+  // initGapiClient();
+
+  document.getElementById("google-signin").addEventListener("click", () => {
+    tokenClient.requestAccessToken();
+  });
+};
+
