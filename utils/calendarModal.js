@@ -1,13 +1,8 @@
 import askPermission from "./askPermission.js";
-import getUserCalendars from "./calendarAPI.js";
+import getUserCalendars from "./getUserCalendars.js";
 import declineName from "./declineName.js";
 import showMessage from "./showMessage.js";
 
-/**
- * Отображает модальное окно с селектором календарей.
- * @param {string} accessToken - Токен доступа Google OAuth.
- * @returns {Promise<string>} - ID выбранного календаря.
- */
 export default async function showCalendarSelector(accessToken) {
   return new Promise(async (resolve) => {
     const calendars = await getUserCalendars(accessToken);

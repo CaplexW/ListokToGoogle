@@ -35,7 +35,6 @@ export default async function importNormalizedEvents(calendarId, normolizedEvent
   try {
     // Выполняем все запросы из пакета
     const results = await batch.execute();
-    console.log("Результаты пакетного импорта:", results);
     return results;
   } catch (error) {
     console.error("Ошибка при пакетном импорте:", error);
