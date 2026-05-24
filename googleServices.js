@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
 import showMessage from "./utils/showMessage.js";
+import updateSigninBtnText from "./utils/updateSigninBtnText.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDafMlOVzaGNinGwVAps9DclV05NO6vnTY",
@@ -25,12 +26,12 @@ function initClient() {
       const accessToken = tokenResponse.access_token;
       localStorage.setItem("googleAccessToken", accessToken);
 
-      // Устанавливаем токен в gapi.client, если он загружен
       if (window.gapi?.client) {
         gapi.client.setToken({ access_token: accessToken });
       }
 
       showMessage("Авторизация успешна!");
+      updateSigninBtnText();
     },
   });
 }
@@ -70,13 +71,16 @@ function initGapiClient() {
 }
 
 // --- Инициализация при загрузке страницы
-window.onload = function () {
+window.onload = async function () {
+  const authButton = document.getElementById("google-signin");
+  await updateSigninBtnText();
+
   initClient();
   initGapiClient();
 
-  // Кнопка авторизации (HTML-кнопка, а не GIS)
-  document.getElementById("google-signin").addEventListener("click", () => {
-    tokenClient.requestAccessToken();
+  authButton.addEventListener("click", async () => {
+    const result = tokenClient.requestAccessToken();
+    await updateSigninBtnText()
   });
 };
 

@@ -4,12 +4,12 @@ import getMondaysWithCurrentMonthDays from './utils/getMondaysWithCurrentMonthDa
 import declineName from './utils/declineName.js';
 import normalizeSchedule from './utils/normolizeSchedule.js';
 import convertScheduleToGoogleCSV from './utils/convertScheduleToGoogleCSV.js'
-import addEventToGoogleCalendar from './utils/addEventToGoogleCalendar.js';
 import showCalendarSelector from './utils/calendarModal.js';
 import importNormalizedEvents from './utils/importNormalizedEvents.js';
-import { isTokenValid } from './googleCDNsnippet.js';
+import { isTokenValid } from './googleServices.js';
 import showMessage from './utils/showMessage.js';
 import getWordForEvents from './utils/getWordForEvents.js';
+import updateSigninBtnText from './utils/updateSigninBtnText.js';
 
 const URL = `https://an7452.listok.online/wapi/week/`;
 const googleCalendarButton = document.querySelector('#download-button-google-calendar');
@@ -27,7 +27,6 @@ async function downloadSchedule() {
 
   const CSVString = convertScheduleToGoogleCSV(eventList);
   downloadCSV(CSVString);
-  console.log(eventList);
 }
 
 importToGoogleCalendarButton.addEventListener('click', async () => {
@@ -39,12 +38,12 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
 
   const isValid = await isTokenValid(accessToken);
   if (!isValid) {
+    await updateSigninBtnText();
     showMessage("Срок вашей авторизации истёк. Пожалуйста, авторизуйтесь через Google снова.");
-    localStorage.removeItem("googleAccessToken"); // Очистка невалидного токена
+    // localStorage.removeItem("googleAccessToken");
     return;
   }
 
-  // Если токен валиден, продолжаем выполнение
   const selectedCalendarId = await showCalendarSelector(accessToken);
   if (!selectedCalendarId) {
     return;
