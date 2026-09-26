@@ -13,8 +13,10 @@ export default async function importNormalizedEvents(calendarId, normolizedEvent
 
   normolizedEvents.forEach(event => {
     const formattedDate = formatDateToISO(event.date);
+    const roomName = event.roomid === '20' ? 'Большой зал' : 'Малый зал';
     const googleEvent = {
       summary: event.name,
+      description: roomName,
       start: {
         dateTime: `${formattedDate}T${event.startTime.padStart(5, '0')}:00+07:00`,
       },

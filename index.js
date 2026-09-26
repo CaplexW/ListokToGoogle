@@ -29,7 +29,8 @@ async function downloadSchedule() {
   downloadCSV(CSVString);
 }
 
-importToGoogleCalendarButton.addEventListener('click', async () => {
+importToGoogleCalendarButton.addEventListener('click', importEventsToGoogleCalendar);
+async function importEventsToGoogleCalendar() {
   const accessToken = localStorage.getItem("googleAccessToken");
   if (!accessToken) {
     showMessage("Сначала авторизуйтесь через Google!");
@@ -59,7 +60,8 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
   } catch (error) {
     showMessage(`Ошибка при импорте событий: ${error.message}`);
   }
-});
+};
+
 
 async function getEventList() {
   const trainer = trainerSelector.value;
@@ -73,9 +75,8 @@ async function getEventList() {
     return fetchJSON(targetURL, officeId);
   });
   const eventList = dateData.map((date) => date.events);
-
   const normolizedEvents = normalizeSchedule(eventList, trainer, displayedMonth);
-
+      
   return normolizedEvents
 }
 function downloadCSV(csvString) {

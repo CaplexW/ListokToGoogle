@@ -5,23 +5,24 @@ export default function normalizeSchedule(data, trainer, thisMonth) {
 
     for (const time in timeSlotObj) {
       const datesObj = timeSlotObj[time];
-
       for (const dateStr in datesObj) {
         const eventArray = datesObj[dateStr];
-        const event = eventArray[0];
         const [year, month, day] = dateStr.split('-').map(Number);
 
-        if (!event) continue;
+        const event = eventArray[0];
         if (month !== thisMonth) continue;
-        if (event.teacherName !== trainer) continue;
+        if (!event) continue;
 
 
+        eventArray.forEach((event) => {
+          if (event.teacherName !== trainer) return;
 
-        result.push({
+          result.push({
           date: `${day}/${month}/${year}`,
           name: event.groupName,
           startTime: time,
           endTime: event.endTime,
+        });
         });
       }
     }
