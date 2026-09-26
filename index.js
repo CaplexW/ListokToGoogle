@@ -51,7 +51,7 @@ async function importEventsToGoogleCalendar() {
 
   try {
     const eventList = await getEventList();
-    // await importNormalizedEvents(selectedCalendarId, eventList);
+    await importNormalizedEvents(selectedCalendarId, eventList);
 
     const selectedCalendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
     const eventWord = getWordForEvents(eventList.length);
