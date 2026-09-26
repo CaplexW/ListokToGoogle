@@ -1,27 +1,29 @@
-export default function normalizeSchedule(data, trainer, thisMonth) {
+export default function normalizeSchedule(weekList, trainer, thisMonth, roomid) {
   const result = [];
+  for (const weekTimes of weekList) {
+    for (const timeSlot in weekTimes) {
+      const daysInTimeSlot = weekTimes[timeSlot];
+      for (const dateStr in daysInTimeSlot) {
 
-  for (const timeSlotObj of data) {
-
-    for (const time in timeSlotObj) {
-      const datesObj = timeSlotObj[time];
-
-      for (const dateStr in datesObj) {
-        const eventArray = datesObj[dateStr];
-        const event = eventArray[0];
+        const eventArray = daysInTimeSlot[dateStr];
         const [year, month, day] = dateStr.split('-').map(Number);
 
-        if (!event) continue;
+        const event = eventArray[0];
         if (month !== thisMonth) continue;
-        if (event.teacherName !== trainer) continue;
+        if (!event) continue;
 
 
+        eventArray.forEach((event) => {
+          if (event.teacherName !== trainer) return;
+          if (event.roomId !== roomid) return;
 
-        result.push({
-          date: `${day}/${month}/${year}`,
-          name: event.groupName,
-          startTime: time,
-          endTime: event.endTime,
+          result.push({
+            date: `${day}/${month}/${year}`,
+            name: event.groupName,
+            startTime: timeSlot,
+            endTime: event.endTime,
+            roomName: event.roomName,
+          });
         });
       }
     }

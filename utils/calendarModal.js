@@ -26,13 +26,16 @@ export default async function showCalendarSelector(accessToken) {
       const trainerSelector = document.querySelector('#trainer-selector');
       const monthSelector = document.querySelector('#month-selector');
       const officeSelector = document.querySelector('#office-selector');
+      const roomSelector = document.querySelector('#room-selector');
 
       const officeName = parseInt(officeSelector.value) ? 'в Невском' : 'на Ленина';
+      console.log(roomSelector.value)
+      const roomName = roomSelector.value === '20' ? 'Большом зале' : 'Малом зале';
       const selectedMonth = monthSelector.options[monthSelector.selectedIndex].textContent;
       const calendarName = calendarSelector.options[calendarSelector.selectedIndex].textContent;
       const trainerName = declineName(trainerSelector.options[trainerSelector.selectedIndex].textContent);
 
-      const confirmed = await askPermission(`Вы собираетесь импортировать график ${trainerName} ${officeName} за ${selectedMonth} в календарь "${calendarName}". Импортировать? `)
+      const confirmed = await askPermission(`Вы собираетесь импортировать график ${trainerName} ${officeName} в ${roomName} за ${selectedMonth} в календарь "${calendarName}". Импортировать? `)
       if (confirmed) {
         resolve(selectedCalendarId);
       } else {

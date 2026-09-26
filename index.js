@@ -18,6 +18,7 @@ const trainerSelector = document.querySelector('#trainer-selector');
 const officeSelector = document.querySelector('#office-selector');
 const monthSelector = document.querySelector('#month-selector');
 const calendarSelector = document.querySelector('#calendar-selector');
+const roomSelector = document.querySelector('#room-selector');
 
 monthSelector.value = new Date().getMonth().toString();
 
@@ -29,7 +30,8 @@ async function downloadSchedule() {
   downloadCSV(CSVString);
 }
 
-importToGoogleCalendarButton.addEventListener('click', async () => {
+importToGoogleCalendarButton.addEventListener('click', importEventsToGoogleCalendar);
+async function importEventsToGoogleCalendar() {
   const accessToken = localStorage.getItem("googleAccessToken");
   if (!accessToken) {
     showMessage("Сначала авторизуйтесь через Google!");
@@ -45,9 +47,8 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
   }
 
   const selectedCalendarId = await showCalendarSelector(accessToken);
-  if (!selectedCalendarId) {
-    return;
-  }
+  if (!selectedCalendarId) return;
+
   try {
     const eventList = await getEventList();
     await importNormalizedEvents(selectedCalendarId, eventList);
@@ -59,22 +60,24 @@ importToGoogleCalendarButton.addEventListener('click', async () => {
   } catch (error) {
     showMessage(`Ошибка при импорте событий: ${error.message}`);
   }
-});
+};
 
 async function getEventList() {
   const trainer = trainerSelector.value;
   const selectedMonth = parseInt(monthSelector.value);
   const displayedMonth = selectedMonth + 1;
   const officeId = parseInt(officeSelector.value);
+  const roomid = roomSelector.value;
 
   const startPoints = getMondaysWithCurrentMonthDays(selectedMonth);
   const targetURLs = startPoints.map((point) => URL + point);
   const dateData = await asyncMap(targetURLs, (targetURL) => {
     return fetchJSON(targetURL, officeId);
   });
-  const eventList = dateData.map((date) => date.events);
 
-  const normolizedEvents = normalizeSchedule(eventList, trainer, displayedMonth);
+  const eventList = dateData.map((date) => date.events);
+  console.info('eventList', eventList)
+  const normolizedEvents = normalizeSchedule(eventList, trainer, displayedMonth, roomid);
 
   return normolizedEvents
 }

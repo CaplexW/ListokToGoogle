@@ -1,5 +1,6 @@
 export default function showMessage(message) {
-  // Создаём элементы модального окна
+  console.error(message);
+
   const overlay = document.createElement('div');
   overlay.className = 'custom-alert-overlay';
 
@@ -13,13 +14,11 @@ export default function showMessage(message) {
   okButton.textContent = 'Ок';
   okButton.className = 'custom-alert-button';
 
-  // Добавляем элементы в DOM
   alertBox.appendChild(alertMessage);
   alertBox.appendChild(okButton);
   overlay.appendChild(alertBox);
   document.body.appendChild(overlay);
 
-  // Добавляем стили для модального окна
   overlay.style.position = 'fixed';
   overlay.style.top = '0';
   overlay.style.left = '0';
@@ -48,7 +47,6 @@ export default function showMessage(message) {
   okButton.style.borderRadius = '4px';
   okButton.style.cursor = 'pointer';
 
-  // Выравнивание кнопки по правому краю
   alertBox.style.display = 'flex';
   alertBox.style.flexDirection = 'column';
   alertBox.style.alignItems = 'center';
@@ -59,7 +57,6 @@ export default function showMessage(message) {
   buttonContainer.appendChild(okButton);
   alertBox.appendChild(buttonContainer);
 
-  // Добавляем обработчик для кнопки "Ок"
   okButton.addEventListener('click', () => {
     document.body.removeChild(overlay);
   });
